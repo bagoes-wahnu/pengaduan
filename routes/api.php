@@ -20,6 +20,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('/pengaduan/json', [PengaduanApiController::class,'json'])->name('pengaduan.json');
-Route::get('/pengaduan/show_json/{gid}', [PengaduanApiController::class,'show_json'])->name('pengaduan.show.json');
+Route::get('/pengaduan/search_json', [PengaduanApiController::class,'search_json'])->name('pengaduan.search.json');
+Route::get('/pengaduan/show_json/{id}', [PengaduanApiController::class,'show_json'])->name('pengaduan.show.json');
 Route::post('/pengaduan/store_json', [PengaduanApiController::class,'store_json'])->name('pengaduan.store.json');
-Route::delete('/pengaduan/delete_json/{gid}', [PengaduanApiController::class,'delete_json'])->name('pengaduan.delete.json');
+Route::delete('/pengaduan/delete_json/{id}', [PengaduanApiController::class,'delete_json'])->name('pengaduan.delete.json');

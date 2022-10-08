@@ -17,7 +17,7 @@ class PengaduanApiController extends Controller
     public function json(Request $request){
         // $data = Skrk::select('*');
         if ($request->ajax()) {
-            $data = Pengaduan::select('*');
+            $data = Pengaduan::select('*')->limit(10000);
             // dd($data);
             return Datatables::of($data)
                     ->addIndexColumn()
@@ -47,7 +47,6 @@ class PengaduanApiController extends Controller
         // dd($aspects);
         return response()->json($aspects);
     }
-
     public function store_json(Request $request)
     {
         // dd(Pengaduan::where('id', $request->id)->exists());
@@ -140,5 +139,38 @@ class PengaduanApiController extends Controller
         Pengaduan::find($id)->delete();
       
         return response()->json(['success'=>'Data Pengaduan deleted successfully.']);
+    }
+    public function search_json(Request $request){
+        // dd($request->all());
+        if ($request->ajax()) {
+            // dd($request->kolom);
+            $data = Pengaduan::select('*')->limit(10000);
+            if ($request->kolom != '' && $request->nilai != '') {
+                // dd($data->where("'$request->kolom'" == 1));
+                // $data = $data->where($request->kolom, $request->nilai);
+                $data = $data->where($request->kolom, 'LIKE', '%' . $request->nilai . '%');
+                $count = $data->count();
+                // dd($data);
+            }
+            return Datatables::of($data)
+                    ->addIndexColumn()
+                    ->addColumn('action', function($data){
+                        // $gid = $data->gid;
+                        // dd($gid);
+                        $view = route('show', $data);
+                        $btn = '<input type="hidden" name="gid" id="gid" value="'.$data->gid.'">';
+                        $btn = $btn . '<a href="'.$view.'" target="_blank" onclick="show_json('.$data->gid.')" data-gid="'.$data->gid.'" class="edit btn btn-info btn-sm mr-2 mb-2">
+                        View
+                        </a>';
+                        $btn = $btn . '<a href="javascript:void(0)" onclick="edit_json('.$data->gid.')" data-gid="'.$data->gid.'" data-toggle="modal" data-target="#modal-lg" class="edit btn btn-primary btn-sm mr-2 mb-2">
+                        Update
+                        </a>';
+                        return $btn;
+                    })
+                    ->rawColumns(['action'])
+                    ->make(true);
+        }
+        // return view('home2');
+        return response()->json(['success'=>'Data Ditemukan.']);
     }
 }

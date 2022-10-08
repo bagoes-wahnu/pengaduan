@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="{{asset("plugins/datatables-buttons/css/buttons.bootstrap4.min.css")}}">
   <link rel="stylesheet" href="{{asset("plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css")}}">
   <link rel="stylesheet" href="{{asset("plugins/toastr/toastr.min.css")}}">
+  <link rel="stylesheet" href="{{asset('plugins/select2/css/select2.min.css')}}">
   <link rel="stylesheet" href="{{asset("dist/css/adminlte.min.css")}}">
 </head>
 <body class="hold-transition sidebar-mini">
@@ -123,14 +124,49 @@
             <div class="card">
               <div class="card-header">
                 <div class="row">
-                    <div class="col-6 mt-2">
-                        <h3 class="card-title">List Semua Data Pengaduan</h3>
+                  <div class="col-md-10 offset-md-1">
+                    {{-- <form action="{{ route('pertelaan.search.json') }}" method="get"> --}}
+                    <form action="{{url("/api/pengaduan/search_json")}}" id="input-search" method="get">
+                    <div class="row">
+                      <div class="col-3">
+                        <div class="form-group">
+                          <label>Pilih Kolom:</label>
+                          <select class="select2" name="kolom" id="kolom" style="width: 100%;">
+                              <option value="id">ID</option>
+                              <option value="nama_pengadu">/Nama Pengadu</option>
+                              <option value="alamat_pengadu">Alamat Pengadu</option>
+                              <option value="nama_teradu">Nama Teradu</option>
+                              <option value="alamat_teradu">Alamat Teradu</option>
+                              <option value="kelurahan">Kelurahan</option>
+                              <option value="kecamatan">Kecamatan</option>
+                              <option value="no_skrk">No SKRK</option>
+                              <option value="no_imb">No IMB</option>
+                              <option value="status_pengaduan">Status Pengaduan</option>
+                              <option value="latitude">Latitude</option>
+                              <option value="longitude">Longitude</option>
+                              <option value="keterangan">Keterangan</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="col-3">
+                        <div class="form-group">
+                          <label>Masukkan Nilai:</label>
+                          <input type="text" name="nilai" id="nilai" class="form-control"/>
+                        </div>
+                      </div>
+                      <div class="col-3">
+                        <div class="form-group">
+                          <label>Cari Data:</label>
+                          <div class="input-group-append">
+                              <button type="submit" class="btn btn-default">
+                                  <i class="fa fa-search"></i>
+                              </button>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div class="col-6 text-right">
-                        <a class="btn btn-success" onclick="create_json()" data-toggle="modal" data-target="#modal-create">
-                            Tambah Data
-                        </a>
-                    </div>
+                    </form>
+                  </div>
                 </div>
               </div>
               <!-- /.card-header -->
@@ -308,44 +344,33 @@
 <script src="{{asset("plugins/datatables-buttons/js/buttons.colVis.min.js")}}"></script>
 <script src="{{asset("plugins/sweetalert2/sweetalert2.min.js")}}"></script>
 <script src="{{asset("plugins/toastr/toastr.min.js")}}"></script>
+<script src="{{asset('plugins/select2/js/select2.full.min.js')}}"></script>
 <!-- AdminLTE App -->
 <script src="{{asset("dist/js/adminlte.min.js")}}"></script>
 <!-- Page specific script -->
 <script>
+  $(function () {
+    $('.select2').select2()
+  });
 	let baseUrl = "{{asset('/')}}";
 	console.log(baseUrl);
   $('.toastrDefaultSuccess').click(function() {
     toastr.success('Data Di Update.')
   });
 	$(document).ready(function () {
-		// $("#example1").DataTable({
-		//   "responsive": true, "lengthChange": false, "autoWidth": false,
-		//   "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-		// }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-        $('#id_create').val('');
-        $('#kelurahan_create').val('');
-        $('#kecamatan_create').val('');
-        console.log($('#id_create').val());
+    $('#id_create').val('');
+    $('#kelurahan_create').val('');
+    $('#kecamatan_create').val('');
+    console.log($('#id_create').val());
 		table()
 	});
-  // $('body').on('click', '.edit', function () {
-  //     var product_id = $(this).data('gid');
-  //     console.log(product_id);
-  //     $.get(baseUrl+"api/tower/show_json" +'/' + product_id , function (data) {
-  //           $('#modelHeading').html("Edit Product");
-  //           $('#saveBtn').val("edit-user");
-  //           $('#ajaxModel').modal('show');
-  //           $('#product_id').val(data.id);
-  //           $('#name').val(data.name);
-  //           $('#detail').val(data.detail);
-  //       })
-  // });
   function table() {
     // $('#id_create').val('');
     // $('#kelurahan_create').val('');
     // $('#kecamatan_create').val('');
-    console.log($('#id_create').val());
+    // console.log($('#id_create').val());
     $('#example2').DataTable({
+        "dom": 'Bfrtip',
         "bDestroy": true,
         "paging": true,
         "lengthChange": false,
@@ -358,14 +383,15 @@
         "serverSide": false,
         "ajax": {
             "url": '{{ route('pengaduan.json') }}',
-            "dataType": "json",
-            "type": "GET",
-            "data":{ _token: "{{csrf_token()}}"}
+            // "dataType": "json",
+            // "type": "GET",
+            // "data":{ _token: "{{csrf_token()}}"}
         },
+        "order":[0,'asc'],
+        "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
         "columns": [
             // {data: 'DT_RowIndex', name: 'id'},
             {data: 'id', name: 'id'},
-            // {data: 'no_skrk'},
             {data: 'nama_pengadu'},
             {data: 'alamat_pengadu'},
             {data: 'nama_teradu'},
@@ -374,7 +400,7 @@
             {data: 'kecamatan'},
             {data: 'action', orderable: false, searcable: false}
         ],
-    });
+    }).buttons().container().appendTo('#example2_wrapper .col-md-6:eq(0)');
   }
   function show_json(id){
     // console.log($('#gid').val(data.gid));
@@ -657,31 +683,31 @@
     console.log(param);
     console.log($('#id_create').val());
     console.log($('#id').val());
-    if (param == 'create') {
-        var data = {
-            id: $("#id_create").val(),
-            no_skrk: $("#no_skrk_create").val(),
-            no_imb: $("#no_imb_create").val(),
-            nama_pengadu: $("#nama_pengadu_create").val(),
-            alamat_pengadu: $("#alamat_pengadu_create").val(),
-            kelurahan: $("#kelurahan_create").val(),
-            kecamatan: $("#kecamatan_create").val(),
-            nama_teradu: $("#nama_teradu_create").val(),
-            alamat_teradu: $("#alamat_teradu_create").val(),
-        }
-    } else if(param == 'edit') {
-        var data = {
-            id: $("#id").val(),
-            no_skrk: $("#no_skrk").val(),
-            no_imb: $("#no_imb").val(),
-            nama_pengadu: $("#nama_pengadu").val(),
-            alamat_pengadu: $("#alamat_pengadu").val(),
-            kelurahan: $("#kelurahan").val(),
-            kecamatan: $("#kecamatan").val(),
-            nama_teradu: $("#nama_teradu").val(),
-            alamat_teradu: $("#alamat_teradu").val(),
-        }
-    }
+    // if (param == 'create') {
+    //     var data = {
+    //         id: $("#id_create").val(),
+    //         no_skrk: $("#no_skrk_create").val(),
+    //         no_imb: $("#no_imb_create").val(),
+    //         nama_pengadu: $("#nama_pengadu_create").val(),
+    //         alamat_pengadu: $("#alamat_pengadu_create").val(),
+    //         kelurahan: $("#kelurahan_create").val(),
+    //         kecamatan: $("#kecamatan_create").val(),
+    //         nama_teradu: $("#nama_teradu_create").val(),
+    //         alamat_teradu: $("#alamat_teradu_create").val(),
+    //     }
+    // } else if(param == 'edit') {
+    //     var data = {
+    //         id: $("#id").val(),
+    //         no_skrk: $("#no_skrk").val(),
+    //         no_imb: $("#no_imb").val(),
+    //         nama_pengadu: $("#nama_pengadu").val(),
+    //         alamat_pengadu: $("#alamat_pengadu").val(),
+    //         kelurahan: $("#kelurahan").val(),
+    //         kecamatan: $("#kecamatan").val(),
+    //         nama_teradu: $("#nama_teradu").val(),
+    //         alamat_teradu: $("#alamat_teradu").val(),
+    //     }
+    // }
     const fd = new FormData(document.getElementById('input-pengaduan'));
     console.log(data)
     $.ajax({
@@ -742,6 +768,55 @@
         }
     });
   }
+  $("#input-search").on("submit", function (e) {
+    var dataString = $(this).serialize();
+    console.log(dataString);
+    $.ajax({
+      type: "GET",
+      url: baseUrl+"api/pengaduan/search_json",
+      data: dataString,
+      success: function () {
+        // Display message back to the user here
+        // search()
+        // res = response;
+        // console.log(res);
+        $('#example2').DataTable({
+        "dom": 'Bfrtip',
+        "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
+        "bDestroy": true,
+        "paging": true,
+        "lengthChange": false,
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false,
+        "responsive": true,
+        "processing": true,
+        "serverSide": false,
+        "ajax": {
+            "url": baseUrl+"api/pengaduan/search_json?"+dataString,
+            "dataType": "json",
+            "type": "GET",
+            "data":{ _token: "{{csrf_token()}}"}
+        },
+        "order":[0,'asc'],
+        "columns": [
+            // {data: 'DT_RowIndex', name: 'id'},
+            {data: 'id', name: 'id'},
+            {data: 'nama_pengadu'},
+            {data: 'alamat_pengadu'},
+            {data: 'nama_teradu'},
+            {data: 'alamat_teradu'},
+            {data: 'kelurahan'},
+            {data: 'kecamatan'},
+            {data: 'action', orderable: false, searcable: false}
+        ],
+        }).buttons().container().appendTo('#example2_wrapper .col-md-6:eq(0)');
+      }
+    });
+ 
+    e.preventDefault();
+  });
 </script>
 </body>
 </html>
