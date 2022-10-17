@@ -164,8 +164,10 @@
                           </div>
                         </div>
                       </div>
+                      
                     </div>
-                    </form>
+                  </form>
+                  <button type="button" onclick="create_json()" class="btn btn-success" data-toggle="modal" data-target="#modal-create">Tambah data</button>  
                   </div>
                 </div>
               </div>
@@ -370,11 +372,12 @@
     // $('#kecamatan_create').val('');
     // console.log($('#id_create').val());
     $('#example2').DataTable({
+        "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
         "dom": 'Bfrtip',
         "bDestroy": true,
         "paging": true,
         "lengthChange": false,
-        "searching": true,
+        // "searching": true,
         "ordering": true,
         "info": true,
         "autoWidth": false,
@@ -388,7 +391,6 @@
             // "data":{ _token: "{{csrf_token()}}"}
         },
         "order":[0,'asc'],
-        "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
         "columns": [
             // {data: 'DT_RowIndex', name: 'id'},
             {data: 'id', name: 'id'},
@@ -498,11 +500,11 @@
   }
   function create_json(){
     // console.log($('#gid').val(data.gid));
-    // console.log(id)
-    console.log($('#id_create').val());
+    // console.log($('#id_create').val());
+    console.log('create')
     $('#create-modal').html(
         `
-        <form action="`+baseUrl+`"api/pengaduan/store_json/"`+id+`" id="input-pengaduan" method="POST" enctype="multipart/form-data">
+        <form action="`+baseUrl+`"api/pengaduan/store_json/" id="input-pengaduan" method="POST" enctype="multipart/form-data">
         <div class="form-group">
           <label for="inputClientCompany">No SKRK</label>
           <input type="text" name="no_skrk" id="no_skrk_create" class="form-control">
